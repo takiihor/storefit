@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>StoreFit — App Store Image Size Converter</title>
+<meta name="description" content="Convert images locally into App Store Connect screenshots, product page headers, and search assets. Exact pixels, opaque backgrounds, and batch ZIP downloads.">
+<link rel="stylesheet" href="../styles.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+
+<svg aria-hidden="true" class="svg-sprite">
+  <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="4.4"/>
+    <circle cx="8.4" cy="8.4" r="1.6"/>
+    <path d="M3.8 16.6l4.6-4.3 3.6 3.4 2.9-2.8 4.9 5.1"/>
+    <path d="M12 8.6v5.2M9.6 11l2.4-2.4L14.4 11" opacity="0"/>
+  </symbol>
+  <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="8.6"/>
+    <path d="M12 11v5.2"/>
+    <circle cx="12" cy="7.9" r=".9" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="4.8" y="10.2" width="14.4" height="10.2" rx="2.8"/>
+    <path d="M8.2 10.2V7.8a3.8 3.8 0 0 1 7.6 0v2.4"/>
+    <path d="M12 14.3v2.1"/>
+  </symbol>
+  <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3.8v11.1M7.6 10.7 12 15.1l4.4-4.4"/>
+    <path d="M4.2 16.8v1.6a2 2 0 0 0 2 2h11.6a2 2 0 0 0 2-2v-1.6"/>
+  </symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12.6l4.2 4.2L19 7.2"/>
+  </symbol>
+  <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <path d="M6 6l12 12M18 6L6 18"/>
+  </symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6.5 9.2L12 14.7l5.5-5.5"/>
+  </symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2.9 19.4 6v5.5c0 4.6-3.1 8-7.4 9.6-4.3-1.6-7.4-5-7.4-9.6V6L12 2.9Z"/>
+    <path d="M8.7 12.1l2.2 2.2 4.4-4.6"/>
+  </symbol>
+  <symbol id="i-wand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 19 15.8 8.2M13.9 6.3l3.8 3.8"/>
+    <path d="M18.6 3.2v3.2M17 4.8h3.2M5.2 4.4v2.4M4 5.6h2.4M20 12.2v2.4M18.8 13.4h2.4M9.6 3.2v1.6M8.8 4h1.6"/>
+  </symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 8.2h15.2M16.2 5.2l3 3-3 3"/>
+    <path d="M20 15.8H4.8M7.8 12.8l-3 3 3 3"/>
+  </symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 3.5h7.5L19 9v11.5H6V3.5Z"/>
+    <path d="M13.3 3.8V9H19"/>
+  </symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <path d="M12 5v14M5 12h14"/>
+  </symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4.5 12h14M13.7 6.9l5.1 5.1-5.1 5.1"/>
+  </symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3.2" y="4.3" width="17.6" height="12.2" rx="2.2"/>
+    <path d="M9 20h6M12 16.5V20"/>
+  </symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="6.6" y="2.8" width="10.8" height="18.4" rx="3"/>
+    <path d="M10.6 5.4h2.8"/>
+  </symbol>
+  <symbol id="i-arrow-left-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14.5 6.5 9 12l5.5 5.5"/>
+  </symbol>
+  <symbol id="i-arrow-right-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9.5 6.5 15 12l-5.5 5.5"/>
+  </symbol>
+</svg>
+
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48">
+          <defs>
+            <linearGradient id="brandGradient" x1="8" y1="6" x2="42" y2="44" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#2F8F64"/>
+              <stop offset=".6" stop-color="#167A58"/>
+              <stop offset="1" stop-color="#0E5D46"/>
+            </linearGradient>
+            <linearGradient id="brandSky" x1="12" y1="12" x2="36" y2="34" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#EAF9F0"/>
+              <stop offset="1" stop-color="#9FD7BE"/>
+            </linearGradient>
+          </defs>
+          <rect width="48" height="48" rx="13" fill="url(#brandGradient)"/>
+          <circle cx="34" cy="14" r="3.6" fill="#F7D488"/>
+          <path d="M10 31.8 19 22l6.1 6.4 4.2-4.7 8.7 8.1H10Z" fill="url(#brandSky)" opacity=".95"/>
+          <path d="M12 35h24" stroke="#0B4A35" stroke-width="1.4" stroke-linecap="round" opacity=".45"/>
+        </svg>
+      </div>
+      <div class="brand-copy">
+        <div class="brand-title-row">
+          <h1>StoreFit</h1>
+          <span class="brand-tag">App Store</span>
+        </div>
+        <p>Image Size Converter</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <label class="language-picker">
+        <span>Language / 語言</span>
+        <select aria-label="Language / 語言" onchange="window.location.href = this.value">
+          <option value="../index.html">繁體中文</option>
+          <option value="index.html" selected>English</option>
+        </select>
+      </label>
+      <span class="privacy-pill">
+        <svg class="icon"><use href="#i-lock"/></svg>
+        Processed locally
+      </span>
+      <button type="button" class="ghost-button" id="specsBtn">
+        <svg class="icon"><use href="#i-info"/></svg>
+        Specifications
+      </button>
+    </div>
+  </header>
+
+  <section class="intro">
+    <div class="intro-copy">
+      <p class="eyebrow">APP STORE CONNECT READY</p>
+      <h2>Resize once. Ready to upload.</h2>
+      <p class="intro-lead">Prepare creative assets and device screenshots with exact dimensions, flattened backgrounds, and a single ZIP download.</p>
+    </div>
+    <div class="intro-chips" aria-label="Features">
+      <span><svg class="icon"><use href="#i-check"/></svg>Exact dimensions</span>
+      <span><svg class="icon"><use href="#i-check"/></svg>No alpha channel</span>
+      <span><svg class="icon"><use href="#i-check"/></svg>Batch ZIP</span>
+    </div>
+  </section>
+
+  <main class="layout">
+    <div class="workspace">
+
+      <section class="card" id="uploadCard">
+        <div class="card-head">
+          <span class="step">1</span>
+          <div class="head-text">
+            <h2>Add images</h2>
+            <p>Add multiple images. Their order determines the export order.</p>
+          </div>
+          <div class="head-actions">
+            <button type="button" class="text-button danger" id="clearBtn" hidden>Clear all</button>
+          </div>
+        </div>
+
+        <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Choose or drop images">
+          <input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden>
+          <div class="drop-icon">
+            <svg class="icon"><use href="#i-upload"/></svg>
+          </div>
+          <div class="drop-copy">
+            <p class="drop-title">Drop images here</p>
+            <p class="drop-sub">or <span class="inline-link">choose files</span>, or paste with <kbd>⌘</kbd><kbd>V</kbd></p>
+            <p class="fine">PNG, JPG, WebP · Use the highest-resolution original</p>
+          </div>
+          <div class="drop-pill">Multiple images</div>
+        </div>
+
+        <div class="sources" id="sources" hidden>
+          <div class="sources-head">
+            <p><strong id="sourceCount">0</strong> images<span class="muted"> · Click to preview</span></p>
+            <div class="sources-head-actions">
+              <span class="drag-hint">Drop to add more</span>
+              <button type="button" class="add-more" id="addMoreBtn">
+                <svg class="icon"><use href="#i-plus"/></svg>Add more
+              </button>
+            </div>
+          </div>
+          <div class="sources-grid" id="sourcesGrid"></div>
+          <div class="notice amber" id="sourceLimitNotice" hidden>
+            <div>
+              <strong>Too many screenshots</strong>
+              <p>Each screenshot size supports up to 10 images. Remove images or keep the first 10.</p>
+            </div>
+            <button type="button" class="mini-button" id="trimSourcesBtn">Keep first 10</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="targetsCard">
+        <div class="card-head">
+          <span class="step">2</span>
+          <div class="head-text">
+            <h2>Select output sizes</h2>
+            <p>Select multiple targets for a single download.</p>
+          </div>
+          <span class="head-badge">Multi-select</span>
+        </div>
+
+        <div class="target-section">
+          <div class="section-head">
+            <div class="section-title">
+              <h3>Creative assets</h3>
+              <span class="mini-tag new">Size presets</span>
+            </div>
+            <button type="button" class="text-button compact" data-select-group="creative">Select all</button>
+          </div>
+          <div class="target-grid" id="creativeGrid"></div>
+          <p class="section-hint">Product page headers, search results, and in-app event assets.</p>
+        </div>
+
+        <div class="target-section">
+          <div class="section-head">
+            <div class="section-title">
+              <h3>Screenshots</h3>
+              <span class="mini-tag">Up to 10 images</span>
+            </div>
+            <div class="segmented compact" id="orientationControl" role="group" aria-label="Screenshot orientation">
+              <button type="button" data-orientation="portrait" class="active">Portrait</button>
+              <button type="button" data-orientation="landscape">Landscape</button>
+            </div>
+          </div>
+          <div class="target-grid" id="screenshotGrid"></div>
+          <p class="section-hint">Orientation applies to iPhone and iPad. Other targets use fixed dimensions.</p>
+        </div>
+
+        <details class="more-targets" id="moreTargets">
+          <summary>
+            <span class="more-title">More targets</span>
+            <span class="more-sub">Mac · Apple TV · Apple Watch · In-app events · Custom dimensions</span>
+            <svg class="icon chevron"><use href="#i-chevron"/></svg>
+          </summary>
+          <div class="more-body">
+            <div class="target-grid" id="moreGrid"></div>
+            <div class="custom-card" id="customCard">
+              <label class="custom-toggle">
+                <input type="checkbox" id="customCheck" data-target-check="custom">
+                <span class="tick"><svg class="icon"><use href="#i-check"/></svg></span>
+                <span>Custom dimensions</span>
+              </label>
+              <div class="custom-fields">
+                <label class="dim-field">
+                  <input id="customW" type="number" min="100" max="20000" step="1" inputmode="numeric" aria-label="Custom width (pixels)">
+                  <span>W</span>
+                </label>
+                <span class="times">×</span>
+                <label class="dim-field">
+                  <input id="customH" type="number" min="100" max="20000" step="1" inputmode="numeric" aria-label="Custom height (pixels)">
+                  <span>H</span>
+                </label>
+                <span class="unit">px</span>
+                <button type="button" class="icon-button" id="swapCustom" title="Swap width and height" aria-label="Swap width and height">
+                  <svg class="icon"><use href="#i-swap"/></svg>
+                </button>
+              </div>
+              <p class="custom-error" id="customError" hidden>Enter an integer between 100 and 20000</p>
+            </div>
+          </div>
+        </details>
+
+        <div class="rule-note">
+          <svg class="icon"><use href="#i-shield"/></svg>
+          <p>Exports use exact dimensions, sRGB, and opaque backgrounds. The 5244 × 2950 targets require PNG.</p>
+        </div>
+      </section>
+
+      <section class="card" id="optionsCard">
+        <div class="card-head">
+          <span class="step">3</span>
+          <div class="head-text">
+            <h2>Layout and format</h2>
+            <p>Choose padding or cropping when aspect ratios differ.</p>
+          </div>
+        </div>
+
+        <div class="option-block">
+          <p class="option-label">How should different aspect ratios fit?</p>
+          <div class="fit-grid" id="fitGrid">
+            <label class="fit-option active" data-fit-card="blur">
+              <input type="radio" name="fitMode" value="blur" checked>
+              <span class="fit-visual blur"><span class="mini-frame"></span></span>
+              <span class="fit-title">Fit entire image</span>
+              <span class="fit-sub">Blurred background</span>
+            </label>
+            <label class="fit-option" data-fit-card="solid">
+              <input type="radio" name="fitMode" value="solid">
+              <span class="fit-visual solid"><span class="mini-frame"></span></span>
+              <span class="fit-title">Fit entire image</span>
+              <span class="fit-sub">Solid padding</span>
+            </label>
+            <label class="fit-option" data-fit-card="cover">
+              <input type="radio" name="fitMode" value="cover">
+              <span class="fit-visual cover"><span class="mini-frame"></span></span>
+              <span class="fit-title">Fill frame</span>
+              <span class="fit-sub">Crop to fit</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="option-row" id="bgRow" hidden>
+          <div class="row-label">Background color</div>
+          <div class="row-content">
+            <div class="color-line">
+              <div class="swatches" id="swatches">
+                <button type="button" class="swatch active" data-color="#F5F5F7" style="--swatch:#F5F5F7" aria-label="Light gray"></button>
+                <button type="button" class="swatch" data-color="#FFFFFF" style="--swatch:#FFFFFF" aria-label="White"></button>
+                <button type="button" class="swatch dark" data-color="#101613" style="--swatch:#101613" aria-label="Dark"></button>
+                <button type="button" class="swatch" data-color="#E6F1E9" style="--swatch:#E6F1E9" aria-label="Light green"></button>
+              </div>
+              <label class="color-picker">
+                <input type="color" id="bgColor" value="#F5F5F7" aria-label="Choose background color">
+                <span id="bgHex">#F5F5F7</span>
+              </label>
+              <button type="button" class="mini-button" id="autoColorBtn">
+                <svg class="icon"><use href="#i-wand"/></svg>Sample color
+              </button>
+            </div>
+            <p class="hint">Automatic color samples the edges of the preview image.</p>
+          </div>
+        </div>
+
+        <div class="option-row" id="anchorRow" hidden>
+          <div class="row-label">Crop position</div>
+          <div class="row-content">
+            <div class="anchor-line">
+              <div class="anchor-grid" id="anchorGrid" role="group" aria-label="Crop alignment"></div>
+              <p class="hint anchor-hint">Keep this area when cropping to a different aspect ratio.<br>Choose Top to preserve a heading near the top.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="option-row">
+          <div class="row-label">Output format</div>
+          <div class="row-content">
+            <div class="format-line">
+              <div class="segmented" id="formatControl" role="group" aria-label="Output format">
+                <button type="button" data-format="png" class="active">PNG</button>
+                <button type="button" data-format="jpg">JPEG</button>
+              </div>
+              <div class="quality-control" id="qualityControl" hidden>
+                <label for="qualityRange">Quality <output id="qualityValue">95%</output></label>
+                <input type="range" id="qualityRange" min="80" max="100" step="1" value="95">
+              </div>
+            </div>
+            <p class="hint" id="formatHint">PNG uses RGB encoding without an alpha channel, ideal for text and interface screenshots.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <aside class="preview-panel" id="previewPanel" aria-label="Live preview and export">
+      <div class="preview-glow" aria-hidden="true"></div>
+      <div class="preview-top">
+        <div>
+          <p class="eyebrow">LIVE PREVIEW</p>
+          <h2>Live preview</h2>
+        </div>
+        <span class="live-badge"><i></i>Live</span>
+      </div>
+
+      <div class="preview-tabs" id="previewTabs" aria-label="Preview targets"></div>
+
+      <div class="preview-stage" id="previewStage">
+        <div class="preview-empty" id="previewEmpty">
+          <div class="empty-icon"><svg class="icon"><use href="#i-phone"/></svg></div>
+          <p id="emptyTitle">Add images first</p>
+          <span id="emptySub">Drop or paste an image to preview the result here.</span>
+        </div>
+        <canvas id="previewCanvas" hidden></canvas>
+      </div>
+
+      <div class="preview-meta" id="previewMeta" hidden>
+        <div class="preview-meta-copy">
+          <p class="preview-name" id="previewName"></p>
+          <p class="preview-source" id="previewSource"></p>
+        </div>
+        <div class="preview-badges" id="previewBadges"></div>
+      </div>
+
+      <div class="preview-nav" id="previewNav" hidden>
+        <button type="button" id="prevSourceBtn" aria-label="Previous image">
+          <svg class="icon"><use href="#i-arrow-left-sm"/></svg>
+        </button>
+        <span id="sourcePosition">1 / 1</span>
+        <button type="button" id="nextSourceBtn" aria-label="Next image">
+          <svg class="icon"><use href="#i-arrow-right-sm"/></svg>
+        </button>
+        <span class="nav-hint">Change source</span>
+      </div>
+
+      <div class="preview-warnings" id="previewWarnings"></div>
+
+      <div class="preview-summary">
+        <div class="summary-top">
+          <span>Total outputs</span>
+          <strong><span id="totalOutputs">0</span> files</strong>
+        </div>
+        <p class="summary-detail" id="summaryDetail">Select a target to export.</p>
+      </div>
+
+      <button type="button" class="export-button" id="exportBtn" disabled>
+        <svg class="icon"><use href="#i-download"/></svg>
+        <span id="exportLabel">Add images first</span>
+      </button>
+      <p class="preview-fine">Images are processed in your browser on this device.<br>Dimensions and RGB encoding are checked before export.</p>
+    </aside>
+  </main>
+
+  <footer class="page-footer">
+    <p>StoreFit v1.0 · Built-in App Store Connect size presets</p>
+    <div class="footer-links">
+      <a href="https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications/" target="_blank" rel="noopener">Creative asset specifications</a>
+      <a href="https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/" target="_blank" rel="noopener">Screenshot specifications</a>
+      <a href="https://developer.apple.com/app-store/asset-best-practices/" target="_blank" rel="noopener">Design tips</a>
+    </div>
+  </footer>
+</div>
+
+<dialog class="modal specs-modal" id="specsDialog">
+  <div class="modal-head">
+    <div>
+      <p class="eyebrow">APP STORE REFERENCE</p>
+      <h2>Size specifications</h2>
+      <p class="modal-sub">Refer to Apple documentation for current requirements</p>
+    </div>
+    <button type="button" class="modal-close" data-close-dialog="specsDialog" aria-label="Close">
+      <svg class="icon"><use href="#i-close"/></svg>
+    </button>
+  </div>
+  <div class="modal-body">
+    <section class="spec-section">
+      <div class="spec-title-row">
+        <h3>Creative assets</h3>
+        <span class="mini-tag new">Size presets</span>
+      </div>
+      <p class="spec-note">Upload in the App Store Connect Asset Library. Headers and search results can share a 16:9 asset.</p>
+      <div class="table-wrap">
+        <table class="spec-table">
+          <thead><tr><th>Target</th><th>Aspect ratio</th><th>Pixels</th><th>Format</th></tr></thead>
+          <tbody>
+            <tr><td>Product page header</td><td>21:9</td><td><code>3840 × 1646</code></td><td>JPEG / PNG</td></tr>
+            <tr><td>Product page header</td><td>16:9</td><td><code>5244 × 2950</code></td><td><strong>PNG only</strong></td></tr>
+            <tr><td>Search results</td><td>3:2</td><td><code>1920 × 1280</code> to <code>3840 × 2560</code></td><td>JPEG / PNG</td></tr>
+            <tr><td>Search results</td><td>16:9</td><td><code>5244 × 2950</code></td><td><strong>PNG only</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="spec-section">
+      <h3>Screenshots</h3>
+      <p class="spec-note">Upload 1–10 screenshots per device size. Available presets are listed below.</p>
+      <div class="table-wrap">
+        <table class="spec-table">
+          <thead><tr><th>Device</th><th>Portrait</th><th>Landscape</th></tr></thead>
+          <tbody>
+            <tr><td>iPhone 6.9″</td><td><code>1320 × 2868</code></td><td><code>2868 × 1320</code></td></tr>
+            <tr><td>iPhone 6.5″</td><td><code>1284 × 2778</code></td><td><code>2778 × 1284</code></td></tr>
+            <tr><td>iPad 13″</td><td><code>2064 × 2752</code></td><td><code>2752 × 2064</code></td></tr>
+            <tr><td>iPad 12.9″</td><td><code>2048 × 2732</code></td><td><code>2732 × 2048</code></td></tr>
+            <tr><td>Mac (16:10)</td><td colspan="2"><code>2880 × 1800</code> (also accepts 1280×800, 1440×900, 2560×1600)</td></tr>
+            <tr><td>Apple TV</td><td colspan="2"><code>3840 × 2160</code> (or 1920×1080)</td></tr>
+            <tr><td>Apple Vision Pro</td><td colspan="2"><code>3840 × 2160</code></td></tr>
+            <tr><td>Apple Watch</td><td colspan="2">Ultra 4/3 <code>422×514</code>; Series 12/11/10 <code>416×496</code>; Series 9/8/7 <code>396×484</code>; Series 6 and later <code>368×448</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="spec-section">
+      <h3>In-app events</h3>
+      <div class="table-wrap">
+        <table class="spec-table">
+          <thead><tr><th>Target</th><th>Aspect ratio</th><th>Pixel range</th><th>Format</th></tr></thead>
+          <tbody>
+            <tr><td>Event card</td><td>16:9</td><td><code>1920 × 1080</code> to <code>3840 × 2160</code></td><td>PNG / JPEG</td></tr>
+            <tr><td>Event detail</td><td>9:16</td><td><code>1080 × 1920</code> to <code>2160 × 3840</code></td><td>PNG / JPEG</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="spec-section">
+      <h3>General rules</h3>
+      <ul class="rule-list">
+        <li><span>01</span>Images must not contain an alpha channel or transparent pixels.</li>
+        <li><span>02</span>Dimensions must match exactly. This tool exports exact pixel sizes.</li>
+        <li><span>03</span>Each screenshot size supports up to 10 images. Check Apple documentation for device scaling rules.</li>
+        <li><span>04</span>The 5244 × 2950 targets use PNG automatically, even when JPEG is selected.</li>
+        <li><span>05</span>Headers and search assets may be cropped. Center key subjects and text with safe margins.</li>
+        <li><span>06</span>Exports use sRGB. Confirm that you can use the fonts, trademarks, and text in your assets.</li>
+      </ul>
+    </section>
+
+    <div class="spec-links">
+      <a class="link-button" href="https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications/" target="_blank" rel="noopener">Apple：Creative asset specifications</a>
+      <a class="link-button" href="https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/" target="_blank" rel="noopener">Apple：Screenshot specifications</a>
+      <a class="link-button" href="https://developer.apple.com/app-store/asset-best-practices/" target="_blank" rel="noopener">Apple：Asset design tips</a>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="modal progress-modal" id="progressDialog">
+  <div class="progress-inner">
+    <div class="spinner" aria-hidden="true"></div>
+    <h2>Exporting</h2>
+    <p class="progress-text" id="progressText">Preparing…</p>
+    <div class="progress-track"><span id="progressBar"></span></div>
+    <div class="progress-foot">
+      <span id="progressCount">0 / 0</span>
+      <button type="button" class="text-button danger" id="cancelExportBtn">Cancel</button>
+    </div>
+    <p class="fine">Large exports may take a few seconds. Keep this page open.</p>
+  </div>
+</dialog>
+
+<dialog class="modal result-modal" id="resultDialog">
+  <div class="result-inner">
+    <div class="success-mark"><svg class="icon"><use href="#i-check"/></svg></div>
+    <p class="eyebrow">EXPORT COMPLETE</p>
+    <h2>Export complete</h2>
+    <p class="result-summary" id="resultSummary"></p>
+    <div class="result-list" id="resultList"></div>
+    <p class="result-note">The ZIP contains folders for each target and numbered files in source order.</p>
+    <div class="result-actions">
+      <button type="button" class="secondary-button" id="closeResultBtn">Done</button>
+      <a class="primary-link" id="downloadAgainBtn" download>
+        <svg class="icon"><use href="#i-download"/></svg>Download ZIP
+      </a>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+  window.addEventListener('error', function (event) {
+    console.error('StoreFit error:', event.error || event.message);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>StoreFit — App Store 圖片尺寸轉換器</title>
+<meta name="description" content="在本機把宣傳圖轉成 App Store Connect 要求的截圖、產品頁頁首與搜尋結果尺寸。精確像素、無透明通道、批次 ZIP 輸出。">
+<link rel="stylesheet" href="styles.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+
+<svg aria-hidden="true" class="svg-sprite">
+  <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="4.4"/>
+    <circle cx="8.4" cy="8.4" r="1.6"/>
+    <path d="M3.8 16.6l4.6-4.3 3.6 3.4 2.9-2.8 4.9 5.1"/>
+    <path d="M12 8.6v5.2M9.6 11l2.4-2.4L14.4 11" opacity="0"/>
+  </symbol>
+  <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="8.6"/>
+    <path d="M12 11v5.2"/>
+    <circle cx="12" cy="7.9" r=".9" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="4.8" y="10.2" width="14.4" height="10.2" rx="2.8"/>
+    <path d="M8.2 10.2V7.8a3.8 3.8 0 0 1 7.6 0v2.4"/>
+    <path d="M12 14.3v2.1"/>
+  </symbol>
+  <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3.8v11.1M7.6 10.7 12 15.1l4.4-4.4"/>
+    <path d="M4.2 16.8v1.6a2 2 0 0 0 2 2h11.6a2 2 0 0 0 2-2v-1.6"/>
+  </symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12.6l4.2 4.2L19 7.2"/>
+  </symbol>
+  <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <path d="M6 6l12 12M18 6L6 18"/>
+  </symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6.5 9.2L12 14.7l5.5-5.5"/>
+  </symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2.9 19.4 6v5.5c0 4.6-3.1 8-7.4 9.6-4.3-1.6-7.4-5-7.4-9.6V6L12 2.9Z"/>
+    <path d="M8.7 12.1l2.2 2.2 4.4-4.6"/>
+  </symbol>
+  <symbol id="i-wand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 19 15.8 8.2M13.9 6.3l3.8 3.8"/>
+    <path d="M18.6 3.2v3.2M17 4.8h3.2M5.2 4.4v2.4M4 5.6h2.4M20 12.2v2.4M18.8 13.4h2.4M9.6 3.2v1.6M8.8 4h1.6"/>
+  </symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 8.2h15.2M16.2 5.2l3 3-3 3"/>
+    <path d="M20 15.8H4.8M7.8 12.8l-3 3 3 3"/>
+  </symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 3.5h7.5L19 9v11.5H6V3.5Z"/>
+    <path d="M13.3 3.8V9H19"/>
+  </symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <path d="M12 5v14M5 12h14"/>
+  </symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4.5 12h14M13.7 6.9l5.1 5.1-5.1 5.1"/>
+  </symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3.2" y="4.3" width="17.6" height="12.2" rx="2.2"/>
+    <path d="M9 20h6M12 16.5V20"/>
+  </symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="6.6" y="2.8" width="10.8" height="18.4" rx="3"/>
+    <path d="M10.6 5.4h2.8"/>
+  </symbol>
+  <symbol id="i-arrow-left-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14.5 6.5 9 12l5.5 5.5"/>
+  </symbol>
+  <symbol id="i-arrow-right-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9.5 6.5 15 12l-5.5 5.5"/>
+  </symbol>
+</svg>
+
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48">
+          <defs>
+            <linearGradient id="brandGradient" x1="8" y1="6" x2="42" y2="44" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#2F8F64"/>
+              <stop offset=".6" stop-color="#167A58"/>
+              <stop offset="1" stop-color="#0E5D46"/>
+            </linearGradient>
+            <linearGradient id="brandSky" x1="12" y1="12" x2="36" y2="34" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#EAF9F0"/>
+              <stop offset="1" stop-color="#9FD7BE"/>
+            </linearGradient>
+          </defs>
+          <rect width="48" height="48" rx="13" fill="url(#brandGradient)"/>
+          <circle cx="34" cy="14" r="3.6" fill="#F7D488"/>
+          <path d="M10 31.8 19 22l6.1 6.4 4.2-4.7 8.7 8.1H10Z" fill="url(#brandSky)" opacity=".95"/>
+          <path d="M12 35h24" stroke="#0B4A35" stroke-width="1.4" stroke-linecap="round" opacity=".45"/>
+        </svg>
+      </div>
+      <div class="brand-copy">
+        <div class="brand-title-row">
+          <h1>StoreFit</h1>
+          <span class="brand-tag">App Store</span>
+        </div>
+        <p>圖片尺寸轉換器</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <label class="language-picker">
+        <span>Language / 語言</span>
+        <select aria-label="Language / 語言" onchange="window.location.href = this.value">
+          <option value="index.html" selected>繁體中文</option>
+          <option value="en/index.html">English</option>
+        </select>
+      </label>
+      <span class="privacy-pill">
+        <svg class="icon"><use href="#i-lock"/></svg>
+        只在本機處理
+      </span>
+      <button type="button" class="ghost-button" id="specsBtn">
+        <svg class="icon"><use href="#i-info"/></svg>
+        尺寸規格
+      </button>
+    </div>
+  </header>
+
+  <section class="intro">
+    <div class="intro-copy">
+      <p class="eyebrow">APP STORE CONNECT READY</p>
+      <h2>一次轉好，直接上載。</h2>
+      <p class="intro-lead">支援 2026 創意素材與各裝置截圖。精確像素、自動壓平透明背景，完成後打包下載。</p>
+    </div>
+    <div class="intro-chips" aria-label="工具特點">
+      <span><svg class="icon"><use href="#i-check"/></svg>精確尺寸</span>
+      <span><svg class="icon"><use href="#i-check"/></svg>無透明通道</span>
+      <span><svg class="icon"><use href="#i-check"/></svg>批次 ZIP</span>
+    </div>
+  </section>
+
+  <main class="layout">
+    <div class="workspace">
+
+      <section class="card" id="uploadCard">
+        <div class="card-head">
+          <span class="step">1</span>
+          <div class="head-text">
+            <h2>加入圖片</h2>
+            <p>可一次拖入多張，圖片順序就是輸出次序。</p>
+          </div>
+          <div class="head-actions">
+            <button type="button" class="text-button danger" id="clearBtn" hidden>清除全部</button>
+          </div>
+        </div>
+
+        <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="選擇或拖放圖片">
+          <input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden>
+          <div class="drop-icon">
+            <svg class="icon"><use href="#i-upload"/></svg>
+          </div>
+          <div class="drop-copy">
+            <p class="drop-title">拖放圖片到這裡</p>
+            <p class="drop-sub">或 <span class="inline-link">選擇檔案</span>，也可以直接貼上 <kbd>⌘</kbd><kbd>V</kbd></p>
+            <p class="fine">支援 PNG、JPG、WebP · 建議使用最高解像度原圖</p>
+          </div>
+          <div class="drop-pill">支援多張</div>
+        </div>
+
+        <div class="sources" id="sources" hidden>
+          <div class="sources-head">
+            <p><strong id="sourceCount">0</strong> 張圖片<span class="muted"> · 點擊圖片可預覽</span></p>
+            <div class="sources-head-actions">
+              <span class="drag-hint">拖入可加入更多</span>
+              <button type="button" class="add-more" id="addMoreBtn">
+                <svg class="icon"><use href="#i-plus"/></svg>加入更多
+              </button>
+            </div>
+          </div>
+          <div class="sources-grid" id="sourcesGrid"></div>
+          <div class="notice amber" id="sourceLimitNotice" hidden>
+            <div>
+              <strong>超過截圖張數上限</strong>
+              <p>Apple 每個截圖尺寸最多 10 張，請移除部分圖片或只保留前 10 張。</p>
+            </div>
+            <button type="button" class="mini-button" id="trimSourcesBtn">只保留前 10 張</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="targetsCard">
+        <div class="card-head">
+          <span class="step">2</span>
+          <div class="head-text">
+            <h2>選擇輸出尺寸</h2>
+            <p>可同時勾選多個版位，一次打包。</p>
+          </div>
+          <span class="head-badge">可多選</span>
+        </div>
+
+        <div class="target-section">
+          <div class="section-head">
+            <div class="section-title">
+              <h3>創意素材</h3>
+              <span class="mini-tag new">2026 新規格</span>
+            </div>
+            <button type="button" class="text-button compact" data-select-group="creative">全選</button>
+          </div>
+          <div class="target-grid" id="creativeGrid"></div>
+          <p class="section-hint">產品頁頁首、搜尋結果與 App 內活動素材。</p>
+        </div>
+
+        <div class="target-section">
+          <div class="section-head">
+            <div class="section-title">
+              <h3>螢幕截圖</h3>
+              <span class="mini-tag">最多 10 張</span>
+            </div>
+            <div class="segmented compact" id="orientationControl" role="group" aria-label="截圖方向">
+              <button type="button" data-orientation="portrait" class="active">直向</button>
+              <button type="button" data-orientation="landscape">橫向</button>
+            </div>
+          </div>
+          <div class="target-grid" id="screenshotGrid"></div>
+          <p class="section-hint">方向設定套用於 iPhone 與 iPad；Mac、TV 等版位固定方向。</p>
+        </div>
+
+        <details class="more-targets" id="moreTargets">
+          <summary>
+            <span class="more-title">更多版位</span>
+            <span class="more-sub">Mac · Apple TV · Apple Watch · App 內活動 · 自訂尺寸</span>
+            <svg class="icon chevron"><use href="#i-chevron"/></svg>
+          </summary>
+          <div class="more-body">
+            <div class="target-grid" id="moreGrid"></div>
+            <div class="custom-card" id="customCard">
+              <label class="custom-toggle">
+                <input type="checkbox" id="customCheck" data-target-check="custom">
+                <span class="tick"><svg class="icon"><use href="#i-check"/></svg></span>
+                <span>自訂尺寸</span>
+              </label>
+              <div class="custom-fields">
+                <label class="dim-field">
+                  <input id="customW" type="number" min="100" max="20000" step="1" inputmode="numeric" aria-label="自訂寬度（像素）">
+                  <span>W</span>
+                </label>
+                <span class="times">×</span>
+                <label class="dim-field">
+                  <input id="customH" type="number" min="100" max="20000" step="1" inputmode="numeric" aria-label="自訂高度（像素）">
+                  <span>H</span>
+                </label>
+                <span class="unit">px</span>
+                <button type="button" class="icon-button" id="swapCustom" title="互換寬高" aria-label="互換寬高">
+                  <svg class="icon"><use href="#i-swap"/></svg>
+                </button>
+              </div>
+              <p class="custom-error" id="customError" hidden>請輸入 100–20000 之間的整數</p>
+            </div>
+          </div>
+        </details>
+
+        <div class="rule-note">
+          <svg class="icon"><use href="#i-shield"/></svg>
+          <p>所有輸出均為精確像素、sRGB、無透明通道。16:9（5244 × 2950）版位僅接受 PNG。</p>
+        </div>
+      </section>
+
+      <section class="card" id="optionsCard">
+        <div class="card-head">
+          <span class="step">3</span>
+          <div class="head-text">
+            <h2>排版與格式</h2>
+            <p>原圖比例不同時，選擇要補背景還是裁切。</p>
+          </div>
+        </div>
+
+        <div class="option-block">
+          <p class="option-label">比例不同時如何處理？</p>
+          <div class="fit-grid" id="fitGrid">
+            <label class="fit-option active" data-fit-card="blur">
+              <input type="radio" name="fitMode" value="blur" checked>
+              <span class="fit-visual blur"><span class="mini-frame"></span></span>
+              <span class="fit-title">完整顯示</span>
+              <span class="fit-sub">模糊背景填滿</span>
+            </label>
+            <label class="fit-option" data-fit-card="solid">
+              <input type="radio" name="fitMode" value="solid">
+              <span class="fit-visual solid"><span class="mini-frame"></span></span>
+              <span class="fit-title">完整顯示</span>
+              <span class="fit-sub">純色留白</span>
+            </label>
+            <label class="fit-option" data-fit-card="cover">
+              <input type="radio" name="fitMode" value="cover">
+              <span class="fit-visual cover"><span class="mini-frame"></span></span>
+              <span class="fit-title">填滿畫面</span>
+              <span class="fit-sub">裁切多餘部分</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="option-row" id="bgRow" hidden>
+          <div class="row-label">背景顏色</div>
+          <div class="row-content">
+            <div class="color-line">
+              <div class="swatches" id="swatches">
+                <button type="button" class="swatch active" data-color="#F5F5F7" style="--swatch:#F5F5F7" aria-label="淺灰"></button>
+                <button type="button" class="swatch" data-color="#FFFFFF" style="--swatch:#FFFFFF" aria-label="白色"></button>
+                <button type="button" class="swatch dark" data-color="#101613" style="--swatch:#101613" aria-label="深色"></button>
+                <button type="button" class="swatch" data-color="#E6F1E9" style="--swatch:#E6F1E9" aria-label="淺綠"></button>
+              </div>
+              <label class="color-picker">
+                <input type="color" id="bgColor" value="#F5F5F7" aria-label="選擇背景顏色">
+                <span id="bgHex">#F5F5F7</span>
+              </label>
+              <button type="button" class="mini-button" id="autoColorBtn">
+                <svg class="icon"><use href="#i-wand"/></svg>自動取色
+              </button>
+            </div>
+            <p class="hint">自動取色會參考目前預覽圖片的邊緣顏色。</p>
+          </div>
+        </div>
+
+        <div class="option-row" id="anchorRow" hidden>
+          <div class="row-label">裁切位置</div>
+          <div class="row-content">
+            <div class="anchor-line">
+              <div class="anchor-grid" id="anchorGrid" role="group" aria-label="裁切對齊位置"></div>
+              <p class="hint anchor-hint">圖片比例與版位不同時，保留這個位置的畫面。<br>例如頁首文字在上方，可選「上」。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="option-row">
+          <div class="row-label">輸出格式</div>
+          <div class="row-content">
+            <div class="format-line">
+              <div class="segmented" id="formatControl" role="group" aria-label="輸出格式">
+                <button type="button" data-format="png" class="active">PNG</button>
+                <button type="button" data-format="jpg">JPEG</button>
+              </div>
+              <div class="quality-control" id="qualityControl" hidden>
+                <label for="qualityRange">畫質 <output id="qualityValue">95%</output></label>
+                <input type="range" id="qualityRange" min="80" max="100" step="1" value="95">
+              </div>
+            </div>
+            <p class="hint" id="formatHint">PNG 以 RGB 編碼、不使用透明通道，適合文字與介面截圖。</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <aside class="preview-panel" id="previewPanel" aria-label="即時預覽與匯出">
+      <div class="preview-glow" aria-hidden="true"></div>
+      <div class="preview-top">
+        <div>
+          <p class="eyebrow">LIVE PREVIEW</p>
+          <h2>即時預覽</h2>
+        </div>
+        <span class="live-badge"><i></i>即時</span>
+      </div>
+
+      <div class="preview-tabs" id="previewTabs" aria-label="預覽版位"></div>
+
+      <div class="preview-stage" id="previewStage">
+        <div class="preview-empty" id="previewEmpty">
+          <div class="empty-icon"><svg class="icon"><use href="#i-phone"/></svg></div>
+          <p id="emptyTitle">先加入圖片</p>
+          <span id="emptySub">拖放或貼上一張宣傳圖，這裡會即時顯示完成效果。</span>
+        </div>
+        <canvas id="previewCanvas" hidden></canvas>
+      </div>
+
+      <div class="preview-meta" id="previewMeta" hidden>
+        <div class="preview-meta-copy">
+          <p class="preview-name" id="previewName"></p>
+          <p class="preview-source" id="previewSource"></p>
+        </div>
+        <div class="preview-badges" id="previewBadges"></div>
+      </div>
+
+      <div class="preview-nav" id="previewNav" hidden>
+        <button type="button" id="prevSourceBtn" aria-label="上一張圖片">
+          <svg class="icon"><use href="#i-arrow-left-sm"/></svg>
+        </button>
+        <span id="sourcePosition">1 / 1</span>
+        <button type="button" id="nextSourceBtn" aria-label="下一張圖片">
+          <svg class="icon"><use href="#i-arrow-right-sm"/></svg>
+        </button>
+        <span class="nav-hint">切換原圖</span>
+      </div>
+
+      <div class="preview-warnings" id="previewWarnings"></div>
+
+      <div class="preview-summary">
+        <div class="summary-top">
+          <span>輸出總數</span>
+          <strong><span id="totalOutputs">0</span> 個檔案</strong>
+        </div>
+        <p class="summary-detail" id="summaryDetail">選擇版位後即可匯出。</p>
+      </div>
+
+      <button type="button" class="export-button" id="exportBtn" disabled>
+        <svg class="icon"><use href="#i-download"/></svg>
+        <span id="exportLabel">先加入圖片</span>
+      </button>
+      <p class="preview-fine">圖片只在這部裝置的瀏覽器內轉換。<br>匯出前會逐張確認尺寸與 RGB 格式。</p>
+    </aside>
+  </main>
+
+  <footer class="page-footer">
+    <p>StoreFit v1.0 · 規格依據 Apple 2026 年 10 月 App Store Connect 文件</p>
+    <div class="footer-links">
+      <a href="https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications/" target="_blank" rel="noopener">創意素材規格</a>
+      <a href="https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/" target="_blank" rel="noopener">截圖規格</a>
+      <a href="https://developer.apple.com/app-store/asset-best-practices/" target="_blank" rel="noopener">設計建議</a>
+    </div>
+  </footer>
+</div>
+
+<dialog class="modal specs-modal" id="specsDialog">
+  <div class="modal-head">
+    <div>
+      <p class="eyebrow">APP STORE REFERENCE</p>
+      <h2>尺寸規格一覽</h2>
+      <p class="modal-sub">2026 年 10 月 · 以 Apple 官方文件為準</p>
+    </div>
+    <button type="button" class="modal-close" data-close-dialog="specsDialog" aria-label="關閉">
+      <svg class="icon"><use href="#i-close"/></svg>
+    </button>
+  </div>
+  <div class="modal-body">
+    <section class="spec-section">
+      <div class="spec-title-row">
+        <h3>創意素材</h3>
+        <span class="mini-tag new">2026 新增</span>
+      </div>
+      <p class="spec-note">在 App Store Connect 的 Asset Library 上載。頁首與搜尋結果可使用同一張 16:9 通用素材。</p>
+      <div class="table-wrap">
+        <table class="spec-table">
+          <thead><tr><th>版位</th><th>比例</th><th>像素</th><th>格式</th></tr></thead>
+          <tbody>
+            <tr><td>產品頁頁首</td><td>21:9</td><td><code>3840 × 1646</code></td><td>JPEG / PNG</td></tr>
+            <tr><td>產品頁頁首</td><td>16:9</td><td><code>5244 × 2950</code></td><td><strong>只收 PNG</strong></td></tr>
+            <tr><td>搜尋結果</td><td>3:2</td><td><code>1920 × 1280</code> 至 <code>3840 × 2560</code></td><td>JPEG / PNG</td></tr>
+            <tr><td>搜尋結果</td><td>16:9</td><td><code>5244 × 2950</code></td><td><strong>只收 PNG</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="spec-section">
+      <h3>螢幕截圖</h3>
+      <p class="spec-note">每個裝置尺寸可上載 1–10 張。以下為本工具提供的最大尺寸；Apple 會自動向下縮放。</p>
+      <div class="table-wrap">
+        <table class="spec-table">
+          <thead><tr><th>裝置</th><th>直向</th><th>橫向</th></tr></thead>
+          <tbody>
+            <tr><td>iPhone 6.9″</td><td><code>1320 × 2868</code></td><td><code>2868 × 1320</code></td></tr>
+            <tr><td>iPhone 6.5″</td><td><code>1284 × 2778</code></td><td><code>2778 × 1284</code></td></tr>
+            <tr><td>iPad 13″</td><td><code>2064 × 2752</code></td><td><code>2752 × 2064</code></td></tr>
+            <tr><td>iPad 12.9″</td><td><code>2048 × 2732</code></td><td><code>2732 × 2048</code></td></tr>
+            <tr><td>Mac（16:10）</td><td colspan="2"><code>2880 × 1800</code>（亦收 1280×800、1440×900、2560×1600）</td></tr>
+            <tr><td>Apple TV</td><td colspan="2"><code>3840 × 2160</code>（或 1920×1080）</td></tr>
+            <tr><td>Apple Vision Pro</td><td colspan="2"><code>3840 × 2160</code></td></tr>
+            <tr><td>Apple Watch</td><td colspan="2">Ultra 4/3 <code>422×514</code>；Series 12/11/10 <code>416×496</code>；Series 9/8/7 <code>396×484</code>；系列 6 以後 <code>368×448</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="spec-section">
+      <h3>App 內活動</h3>
+      <div class="table-wrap">
+        <table class="spec-table">
+          <thead><tr><th>版位</th><th>比例</th><th>像素範圍</th><th>格式</th></tr></thead>
+          <tbody>
+            <tr><td>活動卡片</td><td>16:9</td><td><code>1920 × 1080</code> 至 <code>3840 × 2160</code></td><td>PNG / JPEG</td></tr>
+            <tr><td>活動詳情頁</td><td>9:16</td><td><code>1080 × 1920</code> 至 <code>2160 × 3840</code></td><td>PNG / JPEG</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="spec-section">
+      <h3>通用規則</h3>
+      <ul class="rule-list">
+        <li><span>01</span>所有圖片都不可包含透明通道或透明像素。</li>
+        <li><span>02</span>尺寸必須完全符合，不能只接近；本工具輸出精確像素。</li>
+        <li><span>03</span>每個截圖尺寸最多 10 張；只上載最大尺寸時，Apple 會自動縮放至其他裝置。</li>
+        <li><span>04</span>16:9（5244 × 2950）只用 PNG；本工具會自動套用，不受全域 JPEG 設定影響。</li>
+        <li><span>05</span>頁首與搜尋結果會在不同裝置被裁切，主體與文字請盡量置中，並預留安全區。</li>
+        <li><span>06</span>本工具以 sRGB 輸出；字體、商標與文字請確認在你的帳戶與地區可使用。</li>
+      </ul>
+    </section>
+
+    <div class="spec-links">
+      <a class="link-button" href="https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications/" target="_blank" rel="noopener">Apple：創意素材規格</a>
+      <a class="link-button" href="https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/" target="_blank" rel="noopener">Apple：截圖規格</a>
+      <a class="link-button" href="https://developer.apple.com/app-store/asset-best-practices/" target="_blank" rel="noopener">Apple：素材設計建議</a>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="modal progress-modal" id="progressDialog">
+  <div class="progress-inner">
+    <div class="spinner" aria-hidden="true"></div>
+    <h2>正在輸出</h2>
+    <p class="progress-text" id="progressText">準備中…</p>
+    <div class="progress-track"><span id="progressBar"></span></div>
+    <div class="progress-foot">
+      <span id="progressCount">0 / 0</span>
+      <button type="button" class="text-button danger" id="cancelExportBtn">取消</button>
+    </div>
+    <p class="fine">5244 × 2950 等大尺寸需要幾秒鐘，請保持此頁開啟。</p>
+  </div>
+</dialog>
+
+<dialog class="modal result-modal" id="resultDialog">
+  <div class="result-inner">
+    <div class="success-mark"><svg class="icon"><use href="#i-check"/></svg></div>
+    <p class="eyebrow">EXPORT COMPLETE</p>
+    <h2>轉換完成</h2>
+    <p class="result-summary" id="resultSummary"></p>
+    <div class="result-list" id="resultList"></div>
+    <p class="result-note">ZIP 已按版位分好資料夾，檔名依圖片順序編號。可直接上載至 App Store Connect。</p>
+    <div class="result-actions">
+      <button type="button" class="secondary-button" id="closeResultBtn">完成</button>
+      <a class="primary-link" id="downloadAgainBtn" download>
+        <svg class="icon"><use href="#i-download"/></svg>下載 ZIP
+      </a>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+</body>
+</html>
